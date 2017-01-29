@@ -40,8 +40,9 @@ void get_cord(int player_turn, int & x_cord, int & y_cord){
   }
 }
 
-void game_check(string game_board[3][3], int & winner){
+void win_check(string game_board[3][3], int & winner, const int & turn_count){
   //Check horizontal win
+  int full_board = 0;
   for (int i = 0; i < 3; i++){
     if (game_board[i][0] == game_board[i][1] && game_board[i][1] == game_board[i][2]){
       if (game_board[i][0] == "X"){
@@ -77,6 +78,11 @@ void game_check(string game_board[3][3], int & winner){
       winner = 2;
     }
   }
+  if (turn_count == 9){
+    if (winner != 1 && winner != 2){
+      winner = 3;
+    }
+  }
 }
 
 bool check_board(string game_board[3][3], const int &x_cord, const int &y_cord){
@@ -91,48 +97,80 @@ int main(int argc, char* argv []){
   int player_turn = 1;
   int x_cord = -1;
   int y_cord = -1;
-  string game_board [3][3];
-  for (int i = 0; i < 3; i++){
-    for (int j = 0; j < 3; j++){
-      game_board[i][j] = " ";
+  int turn_count = 0;
+  bool restart = true;
+  string play_again;
+
+  //Game setup
+  cout << "-----------------" << endl;
+  cout << "|  TIC TAC TOE  |" << endl;
+  cout << "-----------------" << endl;
+  cout << "Wlecome to TIC TAC TOE" <<endl;
+  cout << "- Player 1 = X and Player 2 = O" <<endl;
+  cout << "- Enter 'q' at anytime to quit the game" <<endl;
+  cout << endl;
+
+  while (restart){
+    player_turn = 1;
+    string game_board [3][3];
+    for (int i = 0; i < 3; i++){
+      for (int j = 0; j < 3; j++){
+        game_board[i][j] = " ";
+      }
     }
-  }
-  print_board(game_board);
-  while (0 == winner){
-    //cout << "|||||||||||||||||" <<endl;
-    get_cord (player_turn, x_cord, y_cord);
-    if (check_board(game_board, x_cord, y_cord)){
-      if (player_turn == 1){
-        game_board [y_cord][x_cord] = "X";
-        player_turn = 2;
-        x_cord = -1;
-        y_cord = -1;
-        print_board(game_board);
+    print_board(game_board);
+    while (0 == winner){
+      //cout << "|||||||||||||||||" <<endl;
+      get_cord (player_turn, x_cord, y_cord);
+      if (check_board(game_board, x_cord, y_cord)){
+        if (player_turn == 1){
+          game_board [y_cord][x_cord] = "X";
+          player_turn = 2;
+          turn_count++;
+          x_cord = -1;
+          y_cord = -1;
+          print_board(game_board);
+        }
+        else {
+          game_board [y_cord][x_cord] = "O";
+          player_turn = 1;
+          turn_count++;
+          x_cord = -1;
+          y_cord = -1;
+          print_board(game_board);
+        }
       }
       else {
-        game_board [y_cord][x_cord] = "O";
-        player_turn = 1;
+        cerr << "That spot is invalid, try again."<< endl;
         x_cord = -1;
         y_cord = -1;
-        print_board(game_board);
+        //get_cord(player_turn, x_cord, y_cord);
       }
-    }
-    else {
-      cerr << "That spot is invalid, try again."<< endl;
       x_cord = -1;
       y_cord = -1;
-      //get_cord(player_turn, x_cord, y_cord);
-    }
-    x_cord = -1;
-    y_cord = -1;
 
-    game_check(game_board, winner);
+      win_check(game_board, winner, turn_count);
+    }
+    cout << "GAME OVER: ";
+    if (winner == 1){
+      cout << "Congratulations! Player 1 wins!" << endl;
+    }
+    else if (winner == 2){
+      cout << "Congratulations! Player 2 wins!" << endl;
+    }
+    else{
+      cout << "Tie Game" << endl;
+    }
+
+    cout << "Would you like to play again? (y or n): ";
+    cin >> play_again;
+    if (play_again == "y" || play_again == "N"){
+      restart = true;
+      winner = 0;
+    }
+    else  restart = false;
   }
-  if (winner == 1){
-    cout << "Congratulations! Player 1 wins!" << endl;
-  }
-  else{
-    cout << "Congratulations! Player 2 wins!" << endl;
-  }
+
+  cout << "Thanks for playing!" << endl;
 
 }
