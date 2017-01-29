@@ -16,9 +16,17 @@ void print_board(string game_board[3][3]){
 }
 
 void get_cord(int player_turn, int & x_cord, int & y_cord){
+  if (player_turn == 1){
+    cout << "Player 1's turn. ";
+  }
+  else{
+    cout << "Player 2's turn. ";
+  }
   while (x_cord != 0 && x_cord != 1 && x_cord != 2 && y_cord != 0 && y_cord != 1 && y_cord != 2){
     cout << "Enter the x and y coorinates: ";
-    cin >> x_cord >> y_cord;
+    //Problem occur when user enters a non-integer.
+    cin >> x_cord;
+    cin >> y_cord;
     if (x_cord != 0 && x_cord != 1 && x_cord != 2){
       cerr << "Invalid x-coordinate, try again." << endl;
       x_cord = -1;
@@ -32,6 +40,45 @@ void get_cord(int player_turn, int & x_cord, int & y_cord){
   }
 }
 
+void game_check(string game_board[3][3], int & winner){
+  //Check horizontal win
+  for (int i = 0; i < 3; i++){
+    if (game_board[i][0] == game_board[i][1] && game_board[i][1] == game_board[i][2]){
+      if (game_board[i][0] == "X"){
+        winner = 1;
+      }
+      else if (game_board[i][0] == "O"){
+        winner = 2;
+      }
+    }
+    //Vertical check
+    if(game_board[0][i] == game_board[1][i] && game_board[1][i] == game_board[2][i]){
+      if (game_board[0][i] == "X"){
+        winner = 1;
+      }
+      else if (game_board[0][i] == "O"){
+        winner = 2;
+      }
+    }
+  }
+  if (game_board[0][0] == game_board[1][1] && game_board[1][1] == game_board[2][2]){
+    if (game_board[1][1] == "X"){
+      winner = 1;
+    }
+    else if (game_board[1][1] == "O"){
+      winner = 2;
+    }
+  }
+  if (game_board[2][0] == game_board[1][1] && game_board[1][1] == game_board[0][2]){
+    if (game_board[1][1] == "X"){
+      winner = 1;
+    }
+    else if (game_board[1][1] == "O"){
+      winner = 2;
+    }
+  }
+}
+
 bool check_board(string game_board[3][3], const int &x_cord, const int &y_cord){
   if (game_board[y_cord][x_cord] == " "){
     return true;
@@ -40,6 +87,7 @@ bool check_board(string game_board[3][3], const int &x_cord, const int &y_cord){
 }
 
 int main(int argc, char* argv []){
+  int winner = 0;
   int player_turn = 1;
   int x_cord = -1;
   int y_cord = -1;
@@ -50,7 +98,7 @@ int main(int argc, char* argv []){
     }
   }
   print_board(game_board);
-  while (!game_over){
+  while (0 == winner){
     //cout << "|||||||||||||||||" <<endl;
     get_cord (player_turn, x_cord, y_cord);
     if (check_board(game_board, x_cord, y_cord)){
@@ -73,11 +121,18 @@ int main(int argc, char* argv []){
       cerr << "That spot is invalid, try again."<< endl;
       x_cord = -1;
       y_cord = -1;
-      get_cord(player_turn, x_cord, y_cord);
+      //get_cord(player_turn, x_cord, y_cord);
     }
     x_cord = -1;
     y_cord = -1;
 
+    game_check(game_board, winner);
+  }
+  if (winner == 1){
+    cout << "Congratulations! Player 1 wins!" << endl;
+  }
+  else{
+    cout << "Congratulations! Player 2 wins!" << endl;
   }
 
 }
